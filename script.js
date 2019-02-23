@@ -1,19 +1,20 @@
-var links = document.getElementsByTagName("a");
-var tagsMatch = [];
-let tinyLinks = [];
-for (let i = 0; i < links.length; i++){
-  let shorter = /^https?:\/\/(bit\.ly|tinyurl\.com|ow\.ly|snipurl\.com)\/[0-9a-zA-Z]+$/;
-  if (links[i].getAttribute("href").match(shorter)){
-    let newURL = new URL(links[i].getAttribute("href"));
-    tagsMatch.push(links[i]);
-    tinyLinks.push(newURL.hostname + newURL.pathname);
+var links = document.getElementsByTagName('a')
+var tagsMatch = []
+let tinyLinks = []
+const shorter = /^https?:\/\/(bit\.ly|tinyurl\.com|ow\.ly|snipurl\.com)\/[0-9a-zA-Z]+$/
+
+for (let i = 0; i < links.length; i++) {
+  if (links[i].getAttribute('href').match(shorter)) {
+    let newURL = new URL(links[i].getAttribute('href'))
+    tagsMatch.push(links[i])
+    tinyLinks.push(newURL.hostname + newURL.pathname)
   }
 }
-let res = makeRequest(tinyLinks, tagsMatch);
 
-function makeRequest(links, tags) {
-  
-  let serverURL = 'http://192.168.56.133:5000/api/bulk_resolve';
+let res = makeRequest(tinyLinks, tagsMatch)
+
+function makeRequest (links, tags) {
+  let serverURL = 'http://192.168.56.133:5000/api/bulk_resolve'
   let requestJson = {
     method: 'POST',
     headers: {
@@ -23,17 +24,17 @@ function makeRequest(links, tags) {
     body: JSON.stringify(links)
   }
   fetch(serverURL, requestJson).then((res) => {
-    return res.json();
+    return res.json()
   }).then(data => {
-    let resolved = 0;
-    for(let i = 0; i < data.length; i++){
-      if (data[i] !== null){
-        ++resolved;
-        tags[i].setAttribute("href", data[i]);
+    let resolved = 0
+    for (let i = 0; i < data.length; i++) {
+      if (data[i] !== null) {
+        ++resolved
+        tags[i].setAttribute('href', data[i])
       }
     }
-    chrome.storage.sync.set({'counter': resolved});
+    chrome.storage.sync.set({'counter': resolved})
   }).catch((res) => {
     return null
-  });
+  })
 }
