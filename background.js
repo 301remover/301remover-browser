@@ -12,6 +12,7 @@ chrome.runtime.onInstalled.addListener(function() {
       }]);
     });
   });
+chrome.runtime
 /*
     "browser_action": {
       "default_icon": "icon.png"
