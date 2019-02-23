@@ -1,0 +1,15 @@
+{
+    "name": "Computer Says No",
+    "version": "1.0",
+    "description": "It just said no.",
+    "permissions": ["storage"],
+    "browser_action": {
+      "default_icon": "icon.png"
+    },
+    "background": {
+        "scripts": ["background.js"],
+        "persistent": false
+    },
+    "manifest_version": 2
+  }
+  
