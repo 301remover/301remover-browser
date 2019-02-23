@@ -1,8 +1,7 @@
-let changeColor = document.getElementById('changeColor');
+let counter = document.getElementById('counter');
 
-chrome.storage.sync.get('color', function(data) {
-  changeColor.style.backgroundColor = data.color;
-  changeColor.setAttribute('value', data.color);
+chrome.storage.sync.get('counter', function(data) {
+  counter.innerHTML = "Resolved urls: " + data.counter;
 });
 
 changeColor.onclick = function(element) {
