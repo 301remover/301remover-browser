@@ -27,11 +27,25 @@ getShorteners(); //got shorteners
 
 for (let i = 0; i < links.length; i++) {
   const href = links[i].getAttribute('href')
+  /*
   if (href != null && href.match(shorter)) { //TODO change to check using contains and shorteners
     let newURL = new URL(links[i].getAttribute('href'))
     tagsMatch.push(links[i])
     tinyLinks.push(newURL.hostname + newURL.pathname)
   }
+  */
+
+  //can't be a contains, has to be startsWith???
+  //but then we have to loop over the whole list
+  if (href != null) {
+    shorteners.forEach(function(element) {
+      console.log(href + ' *** ' + element);
+      if(href.startsWith(element)) {
+        let newURL = new URL(links[i].getAttribute('href'));
+        tagsMatch.push(links[i]);
+        tinyLinks.push(newURL.hostname + newURL.pathname);
+      }
+  });
 }
 
 let res = makeRequest(tinyLinks, tagsMatch)
