@@ -40,7 +40,6 @@ function getShorteners() {
   })
 }
 
-
 getShorteners(); //got shorteners
 
 for (let i = 0; i < links.length; i++) {
