@@ -2,10 +2,9 @@
     "name": "301remover Chrome Extension",
     "version": "1.0",
     "description": "Insert description here...",
-    "permissions": ["activeTab", "declarativeContent", "storage"],
+    "permissions": ["activeTab", "declarativeContent", "storage", "webRequest"],
     "background": {
-        "scripts": ["background.js"],
-        "persistent": false
+        "scripts": ["background.js"]
     },
     "page_action": {
         "default_popup": "popup.html",
