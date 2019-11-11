@@ -14,12 +14,12 @@ getShorteners = () => {
     }
   }
   return fetchResource(shortenersURL, requestJson).then((res) => {
-    return res.json();
+    return res.json()
   }).then(resp => {
     let shortenerRegex = {}
     for (let key in resp.data) {
-      let obj = (resp.data[key]);
-      regexStr = obj.url_pattern.replace("{shortcode}", "([" + obj.shortcode_alphabet + "]+)");
+      let obj = (resp.data[key])
+      regexStr = obj.url_pattern.replace("{shortcode}", "([" + obj.shortcode_alphabet + "]+)")
       shortenerRegex[obj.domain] = new RegExp(regexStr)
     }
     return shortenerRegex
@@ -50,16 +50,18 @@ getShorteners().then((shortenerRegex) => {
   }).filter((link) =>
     link.shortcode != null
   ).map((link) => {
-    tagsMatch.push(link.node);
-    let newURL = new URL(link.href);
-    tinyLinks.push(newURL.hostname + newURL.pathname);
-    return link;
+    tagsMatch.push(link.node)
+    let newURL = new URL(link.href)
+    tinyLinks.push(newURL.hostname + newURL.pathname)
+    return link
   })
   console.log(links)
+  console.log(tagsMatch)
+  console.log(tinyLinks)
 
 
 
-  // for (let i = 0; i < links.length; i++) {
+  // for (let i = 0 i < links.length i++) {
   //   
   //   if (href != null && masterRegex.test(href)) {
 
@@ -70,15 +72,15 @@ getShorteners().then((shortenerRegex) => {
       
 
   //     for (let key in shortenerRegex) {
-  //       re = shortenerRegex[key];
-  //       // console.log(typeof(re) + ': ' + re);
+  //       re = shortenerRegex[key]
+  //       // console.log(typeof(re) + ': ' + re)
 
-  //       let match = href.match(re);
-  //     };
+  //       let match = href.match(re)
+  //     }
   
-  //     let newURL = new URL(links[i].getAttribute('href'));
-  //     tagsMatch.push(links[i]);
-  //     tinyLinks.push(newURL.hostname + newURL.pathname);
+  //     let newURL = new URL(links[i].getAttribute('href'))
+  //     tagsMatch.push(links[i])
+  //     tinyLinks.push(newURL.hostname + newURL.pathname)
   //   }
   
     /*
@@ -94,13 +96,13 @@ getShorteners().then((shortenerRegex) => {
     //but then we have to loop over the whole list
     if (href != null) {
       shorteners.forEach(function(element) {
-        console.log(href + ' *** ' + element);
+        console.log(href + ' *** ' + element)
         if(href.startsWith(element)) {
-          let newURL = new URL(links[i].getAttribute('href'));
-          tagsMatch.push(links[i]);
-          tinyLinks.push(newURL.hostname + newURL.pathname);
+          let newURL = new URL(links[i].getAttribute('href'))
+          tagsMatch.push(links[i])
+          tinyLinks.push(newURL.hostname + newURL.pathname)
         }
-    });
+    })
     */
   //}
   
@@ -114,19 +116,19 @@ getShorteners().then((shortenerRegex) => {
 function fetchResource(input, init) {
   return new Promise((resolve, reject) => {
     chrome.runtime.sendMessage({input, init}, messageResponse => {
-      const [response, error] = messageResponse;
+      const [response, error] = messageResponse
       if (response === null) {
-        reject(error);
+        reject(error)
       } else {
         // Use undefined on a 204 - No Content
-        const body = response.body ? new Blob([response.body]) : undefined;
+        const body = response.body ? new Blob([response.body]) : undefined
         resolve(new Response(body, {
           status: response.status,
           statusText: response.statusText,
-        }));
+        }))
       }
-    });
-  });
+    })
+  })
 }
 
 function makeRequest(links, tags) {
