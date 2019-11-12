@@ -1,0 +1,10 @@
+image: node:latest
+
+stages:
+  - test
+
+job 1:
+  stage: test
+  script:
+  - npm install --no-optional
+  - npm test

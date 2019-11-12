@@ -1,46 +1,48 @@
+/* global chrome, Blob, Response */
+/* eslint no-unused-vars: ["error", { "varsIgnorePattern": "_" }] */
+
 var tagsMatch = []
-let tinyLinks = []
+const tinyLinks = []
 
 const masterRegex = /^http(s?):\/\/(bit\.ly|tinyurl\.com|goo\.gl)/
 const shortenersURL = 'http://301r.dev/api/shorteners'
 const resolverURL = 'http://301r.dev/api/unshorten'
 
-getShorteners = () => {
+const getShorteners = () => {
   const requestJson = {
     method: 'GET',
     headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json',
+      Accept: 'application/json',
+      'Content-Type': 'application/json'
     }
   }
   return fetchResource(shortenersURL, requestJson).then((res) => {
     return res.json()
   }).then(resp => {
-    let shortenerRegex = {}
-    for (let key in resp.data) {
-      let obj = (resp.data[key])
-      regexStr = obj.url_pattern.replace("{shortcode}", "([" + obj.shortcode_alphabet + "]+)")
-      shortenerRegex[obj.domain] = new RegExp(regexStr)
+    const shortenerRegex = {}
+    for (const key in resp.data) {
+      const obj = (resp.data[key])
+      shortenerRegex[obj.domain] = new RegExp(obj.url_pattern.replace('{shortcode}', '([' + obj.shortcode_alphabet + ']+)'))
     }
     return shortenerRegex
   })
 }
 
 getShorteners().then((shortenerRegex) => {
-  let nodes = document.getElementsByTagName('a')
+  const nodes = document.getElementsByTagName('a')
   console.log(nodes)
-  links = Array.from(nodes).map((node) =>
+  const links = Array.from(nodes).map((node) =>
     ({
       href: node.getAttribute('href'),
       node: node
     })
   ).filter(({
-      href: href
-    }) =>
+    href
+  }) =>
     href != null
   ).map(({
-    href: href,
-    node: node
+    href,
+    node
   }) => {
     return {
       href: href,
@@ -63,7 +65,7 @@ getShorteners().then((shortenerRegex) => {
     link.shortcode != null
   ).map((link) => {
     tagsMatch.push(link.node)
-    let newURL = new URL(link.href)
+    const newURL = new URL(link.href)
     tinyLinks.push(newURL.hostname + newURL.pathname)
     return link
   })
@@ -71,7 +73,7 @@ getShorteners().then((shortenerRegex) => {
   resolveURLs(links, tagsMatch)
 })
 
-function fetchResource(input, init) {
+function fetchResource (input, init) {
   return new Promise((resolve, reject) => {
     chrome.runtime.sendMessage({
       input,
@@ -82,17 +84,23 @@ function fetchResource(input, init) {
         reject(error)
       } else {
         // Use undefined on a 204 - No Content
-        const body = response.body ? new Blob([response.body]) : undefined
-        resolve(new Response(body, {
+        // const body = response.body ? new Blob([response.body]) : undefined
+        let body
+        if (response.body) {
+          body = new Blob([response.body])
+        }
+
+        const resp = new Response(body, {
           status: response.status,
-          statusText: response.statusText,
-        }))
+          statusText: response.statusText
+        })
+        resolve(resp)
       }
     })
   })
 }
 
-function resolveURLs(links, tags) {
+function resolveURLs (links, tags) {
   const requestLinks = links.map((link) =>
     ({
       domain: link.domain,
@@ -105,7 +113,7 @@ function resolveURLs(links, tags) {
   const requestJson = {
     method: 'POST',
     headers: {
-      'Accept': 'application/json',
+      Accept: 'application/json',
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
@@ -124,10 +132,10 @@ function resolveURLs(links, tags) {
       }
     }
     chrome.storage.sync.set({
-      'counter': resolved
+      counter: resolved
     })
   }).catch((res) => {
-    console.log("ERROR: " + res);
+    console.log('ERROR: ' + res)
     return null
   })
 }
