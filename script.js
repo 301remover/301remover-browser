@@ -67,9 +67,8 @@ getShorteners().then((shortenerRegex) => {
     tinyLinks.push(newURL.hostname + newURL.pathname)
     return link
   })
-  console.log(links)
 
-  let res = resolveURLs(links, tagsMatch)
+  resolveURLs(links, tagsMatch)
 })
 
 function fetchResource(input, init) {
