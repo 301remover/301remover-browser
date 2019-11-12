@@ -1,12 +1,12 @@
-
 var tagsMatch = []
 let tinyLinks = []
 
 const masterRegex = /^http(s?):\/\/(bit\.ly|tinyurl\.com|goo\.gl)/
 const shortenersURL = 'http://301r.dev/api/shorteners'
+const resolverURL = 'http://301r.dev/api/unshorten'
 
 getShorteners = () => {
-  let requestJson = {
+  const requestJson = {
     method: 'GET',
     headers: {
       'Accept': 'application/json',
@@ -30,11 +30,23 @@ getShorteners().then((shortenerRegex) => {
   let nodes = document.getElementsByTagName('a')
   console.log(nodes)
   links = Array.from(nodes).map((node) =>
-    ({href: node.getAttribute('href'), node: node})
-  ).filter(({href: href}) =>
+    ({
+      href: node.getAttribute('href'),
+      node: node
+    })
+  ).filter(({
+      href: href
+    }) =>
     href != null
-  ).map(({href: href, node: node}) => {
-    return {href: href, node: node, match: href.match(masterRegex)}
+  ).map(({
+    href: href,
+    node: node
+  }) => {
+    return {
+      href: href,
+      node: node,
+      match: href.match(masterRegex)
+    }
   }).filter((link) => {
     return link.match != null
   }).map((link) => {
@@ -56,66 +68,16 @@ getShorteners().then((shortenerRegex) => {
     return link
   })
   console.log(links)
-  console.log(tagsMatch)
-  console.log(tinyLinks)
 
-
-
-  // for (let i = 0 i < links.length i++) {
-  //   
-  //   if (href != null && masterRegex.test(href)) {
-
-  //     let masterMatch = href.match(masterRegex)
-  //     console.log(masterMatch)
-
-  //     if(masterMatch 
-      
-
-  //     for (let key in shortenerRegex) {
-  //       re = shortenerRegex[key]
-  //       // console.log(typeof(re) + ': ' + re)
-
-  //       let match = href.match(re)
-  //     }
-  
-  //     let newURL = new URL(links[i].getAttribute('href'))
-  //     tagsMatch.push(links[i])
-  //     tinyLinks.push(newURL.hostname + newURL.pathname)
-  //   }
-  
-    /*
-    if (href != null && href.match(shorter)) { //TODO change to check using contains and shorteners
-      let newURL = new URL(links[i].getAttribute('href'))
-      tagsMatch.push(links[i])
-      tinyLinks.push(newURL.hostname + newURL.pathname)
-    }
-    /*
-  
-    /*
-    //can't be a contains, has to be startsWith???
-    //but then we have to loop over the whole list
-    if (href != null) {
-      shorteners.forEach(function(element) {
-        console.log(href + ' *** ' + element)
-        if(href.startsWith(element)) {
-          let newURL = new URL(links[i].getAttribute('href'))
-          tagsMatch.push(links[i])
-          tinyLinks.push(newURL.hostname + newURL.pathname)
-        }
-    })
-    */
-  //}
-  
-  let res = makeRequest(tinyLinks, tagsMatch)
+  let res = resolveURLs(links, tagsMatch)
 })
-
-
-
-
 
 function fetchResource(input, init) {
   return new Promise((resolve, reject) => {
-    chrome.runtime.sendMessage({input, init}, messageResponse => {
+    chrome.runtime.sendMessage({
+      input,
+      init
+    }, messageResponse => {
       const [response, error] = messageResponse
       if (response === null) {
         reject(error)
@@ -131,14 +93,42 @@ function fetchResource(input, init) {
   })
 }
 
-function makeRequest(links, tags) {
-  var data = ['https://www.google.com', 'https://archive.org']
-  let resolved = 0
-  for(let i = 0; i < data.length; i++) {
-    if(data[i] !== null) {
-      ++resolved
-      tags[i].setAttribute('href', data[i])
-    }
+function resolveURLs(links, tags) {
+  const requestLinks = links.map((link) =>
+    ({
+      domain: link.domain,
+      shortcode: link.shortcode
+    })
+  )
+  console.log(JSON.stringify({
+    shortlinks: requestLinks
+  }))
+  const requestJson = {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      shortlinks: requestLinks
+    })
   }
-  chrome.storage.sync.set({'counter': resolved})
+  return fetchResource(resolverURL, requestJson).then((res) => {
+    return res.json()
+  }).then(resp => {
+    console.log(resp)
+    let resolved = 0
+    for (let i = 0; i < resp.length; i++) {
+      if (resp[i] !== null) {
+        ++resolved
+        tags[i].setAttribute('href', resp[i])
+      }
+    }
+    chrome.storage.sync.set({
+      'counter': resolved
+    })
+  }).catch((res) => {
+    console.log("ERROR: " + res);
+    return null
+  })
 }
