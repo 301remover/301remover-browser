@@ -35,14 +35,9 @@ getShorteners().then((shortenerRegex) => {
       href: node.getAttribute('href'),
       node: node
     })
-  ).filter(({
-    href
-  }) =>
+  ).filter(({ href }) =>
     href != null
-  ).map(({
-    href,
-    node
-  }) => {
+  ).map(({ href, node }) => {
     return {
       href: href,
       node: node,
