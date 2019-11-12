@@ -1,4 +1,5 @@
 /* global chrome, fetch */
+/* eslint no-unused-vars: ["error", { "varsIgnorePattern": "shortenerRegex" }] */
 
 const masterRegex = /^http(s?):\/\/(bit\.ly|tinyurl\.com|goo\.gl)/
 const shortenersURL = 'http://301r.dev/api/shorteners'
@@ -27,7 +28,6 @@ const getShorteners = () => {
 
 chrome.runtime.onStartup.addListener(function () {
   getShorteners().then((resp) => {
-    console.log(shortenerRegex)
     shortenerRegex = resp
   })
 })
@@ -52,6 +52,7 @@ chrome.webRequest.onBeforeRequest.addListener(
   }, { urls: ['<all_urls>'] }, ['blocking']
 )
 
+// Listens for messages to call fetch from background
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   fetch(request.input, request.init).then(function (response) {
     return response.text().then(function (text) {

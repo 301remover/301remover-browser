@@ -30,7 +30,6 @@ const getShorteners = () => {
 
 getShorteners().then((shortenerRegex) => {
   const nodes = document.getElementsByTagName('a')
-  console.log(nodes)
   const links = Array.from(nodes).map((node) =>
     ({
       href: node.getAttribute('href'),
@@ -83,18 +82,11 @@ function fetchResource (input, init) {
       if (response === null) {
         reject(error)
       } else {
-        // Use undefined on a 204 - No Content
-        // const body = response.body ? new Blob([response.body]) : undefined
-        let body
-        if (response.body) {
-          body = new Blob([response.body])
-        }
-
-        const resp = new Response(body, {
+        const body = response.body ? new Blob([response.body]) : undefined
+        resolve(new Response(body, {
           status: response.status,
           statusText: response.statusText
-        })
-        resolve(resp)
+        }))
       }
     })
   })
@@ -107,9 +99,6 @@ function resolveURLs (links, tags) {
       shortcode: link.shortcode
     })
   )
-  console.log(JSON.stringify({
-    shortlinks: requestLinks
-  }))
   const requestJson = {
     method: 'POST',
     headers: {
@@ -123,7 +112,6 @@ function resolveURLs (links, tags) {
   return fetchResource(resolverURL, requestJson).then((res) => {
     return res.json()
   }).then(resp => {
-    console.log(resp)
     let resolved = 0
     for (let i = 0; i < resp.length; i++) {
       if (resp[i] !== null) {
@@ -134,8 +122,5 @@ function resolveURLs (links, tags) {
     chrome.storage.sync.set({
       counter: resolved
     })
-  }).catch((res) => {
-    console.log('ERROR: ' + res)
-    return null
   })
 }
