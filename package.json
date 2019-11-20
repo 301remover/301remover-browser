@@ -1,0 +1,9 @@
+{
+  "name": "301r-browser-extension",
+  "devDependencies": {
+    "standard": "*"
+  },
+  "scripts": {
+    "test": "standard *.js"
+  }
+}

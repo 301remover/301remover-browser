@@ -1,5 +1,7 @@
-let counter = document.getElementById('counter');
+/* global chrome */
 
-chrome.storage.sync.get('counter', function(data) {
-  counter.innerHTML = "Resolved urls: " + data.counter;
-});
+const counter = document.getElementById('counter')
+
+chrome.storage.sync.get('counter', function (data) {
+  counter.innerHTML = 'Resolved urls: ' + data.counter
+})
