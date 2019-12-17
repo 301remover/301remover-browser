@@ -8,6 +8,9 @@ const masterRegex = /^http(s?):\/\/(bit\.ly|tinyurl\.com|goo\.gl)/
 const shortenersURL = 'http://301r.dev/api/shorteners'
 const resolverURL = 'http://301r.dev/api/unshorten'
 
+// const shortenersURL = 'http://localhost:4000/api/shorteners'
+// const resolverURL = 'http://localhost:4000/api/unshorten'
+
 const getShorteners = () => {
   const requestJson = {
     method: 'GET',
@@ -17,18 +20,23 @@ const getShorteners = () => {
     }
   }
   return fetchResource(shortenersURL, requestJson).then((res) => {
+    console.log('resp fetch')
     return res.json()
   }).then(resp => {
+    console.log('resp taken')
     const shortenerRegex = {}
     for (const key in resp.data) {
       const obj = (resp.data[key])
       shortenerRegex[obj.domain] = new RegExp(obj.url_pattern.replace('{shortcode}', '([' + obj.shortcode_alphabet + ']+)'))
     }
+    console.log(shortenerRegex)
     return shortenerRegex
   })
 }
 
 getShorteners().then((shortenerRegex) => {
+  console.log('getshorteners then promise')
+  console.log(shortenerRegex)
   const nodes = document.getElementsByTagName('a')
   const links = Array.from(nodes).map((node) =>
     ({
@@ -63,7 +71,9 @@ getShorteners().then((shortenerRegex) => {
     tinyLinks.push(newURL.hostname + newURL.pathname)
     return link
   })
-
+  console.log('resolve urls about to be called')
+  console.log(links)
+  console.log(tagsMatch)
   resolveURLs(links, tagsMatch)
 })
 
@@ -104,9 +114,12 @@ function resolveURLs (links, tags) {
       shortlinks: requestLinks
     })
   }
+  console.log(requestJson)
   return fetchResource(resolverURL, requestJson).then((res) => {
     return res.json()
   }).then(resp => {
+    console.log('resolveurls resp')
+    console.log(resp)
     let resolved = 0
     for (let i = 0; i < resp.length; i++) {
       if (resp[i] !== null) {

@@ -15,6 +15,7 @@ const getShorteners = () => {
     }
   }
   return fetch(shortenersURL, requestJson).then((res) => {
+    console.log('getShorteners')
     return res.json()
   }).then(resp => {
     const shortenerRegex = {}
@@ -33,6 +34,7 @@ chrome.runtime.onStartup.addListener(function () {
 })
 
 chrome.runtime.onInstalled.addListener(function () {
+  console.log('startup')
   chrome.declarativeContent.onPageChanged.removeRules(undefined, function () {
     chrome.declarativeContent.onPageChanged.addRules([{
       conditions: [new chrome.declarativeContent.PageStateMatcher({
@@ -45,6 +47,7 @@ chrome.runtime.onInstalled.addListener(function () {
 
 chrome.webRequest.onBeforeRequest.addListener(
   function (details) {
+    console.log('onbeforerequest')
     if (details.type !== 'main_frame' || !masterRegex.test(details.url)) {
       return
     }
