@@ -5,9 +5,6 @@ var tagsMatch = []
 const tinyLinks = []
 
 const masterRegex = /^http(s?):\/\/(bit\.ly|tinyurl\.com|goo\.gl)/
-// const shortenersURL = 'http://301r.dev/api/shorteners'
-// const resolverURL = 'http://301r.dev/api/unshorten'
-
 const shortenersURL = 'http://localhost:4000/api/shorteners'
 const resolverURL = 'http://localhost:4000/api/unshorten'
 

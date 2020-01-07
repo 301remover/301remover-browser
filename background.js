@@ -2,12 +2,8 @@
 /* eslint no-unused-vars: ["error", { "varsIgnorePattern": "_" }]  */
 
 const masterRegex = /^http(s?):\/\/(bit\.ly|tinyurl\.com|goo\.gl)/
-// const shortenersURL = 'http://301r.dev/api/shorteners'
-// const baseURL = 'http://301r.dev/api/redirect/'
-
-const shortenersURL = 'http://localhost:4000/api/shorteners'
-const baseURL = 'http://localhost:4000/api/redirect/'
-
+const shortenersURL = 'http://301r.dev/api/shorteners'
+const baseURL = 'http://301r.dev/api/redirect/'
 var shortenerRegex = {}
 
 const getShorteners = () => {
