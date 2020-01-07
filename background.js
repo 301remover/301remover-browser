@@ -1,5 +1,5 @@
 /* global chrome, fetch */
-/* eslint no-unused-vars: ["error", { "varsIgnorePattern": "shortenerRegex", "httpsMatch" }] */
+/* eslint no-unused-vars: ["error", { "varsIgnorePattern": "_" }]  */
 
 const masterRegex = /^http(s?):\/\/(bit\.ly|tinyurl\.com|goo\.gl)/
 // const shortenersURL = 'http://301r.dev/api/shorteners'
@@ -63,10 +63,13 @@ chrome.runtime.onInstalled.addListener(function () {
 chrome.webRequest.onBeforeRequest.addListener(
   function (details) {
     if (details.type === 'main_frame' && masterRegex.test(details.url)) {
-      const masterRegexMatch = details.url.match(masterRegex)
-      const domain = masterRegexMatch[2]
-      const shortenerRegexMatch = details.url.match(shortenerRegex[domain])
-      var url = baseURL + domain + '/' + shortenerRegexMatch[1]
+      // it's a shortened link
+      const [_, _httpsMatch, domain] = details.url.match(masterRegex)
+      console.log(domain)
+      console.log(shortenerRegex[domain])
+      const [_fullUrl, shortcode] = details.url.match(shortenerRegex[domain])
+      var url = baseURL + domain + '/' + shortcode
+      console.log(url)
       return { redirectUrl: url }
     }
   }, { urls: ['<all_urls>'] }, ['blocking']
