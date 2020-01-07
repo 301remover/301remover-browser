@@ -49,28 +49,12 @@ chrome.runtime.onInstalled.addListener(function () {
   })
 })
 
-// redirect/domain/shortcode
-// chrome.webRequest.onBeforeRequest.addListener(
-//   function (details) {
-//     console.log('onbeforerequest')
-//     if (details.type !== 'main_frame' || !masterRegex.test(details.url)) {
-//       return
-//     }
-//     return { cancel: true }
-//   }, { urls: ['<all_urls>'] }, ['blocking']
-// )
-
 chrome.webRequest.onBeforeRequest.addListener(
   function (details) {
     if (details.type === 'main_frame' && masterRegex.test(details.url)) {
-      // it's a shortened link
       const [_, _httpsMatch, domain] = details.url.match(masterRegex)
-      console.log(domain)
-      console.log(shortenerRegex[domain])
-      const [_fullUrl, shortcode] = details.url.match(shortenerRegex[domain])
-      var url = baseURL + domain + '/' + shortcode
-      console.log(url)
-      return { redirectUrl: url }
+      const [_protocolDomain, shortcode] = details.url.match(shortenerRegex[domain])
+      return { redirectUrl: baseURL + domain + '/' + shortcode }
     }
   }, { urls: ['<all_urls>'] }, ['blocking']
 )
