@@ -63,19 +63,13 @@ chrome.runtime.onInstalled.addListener(function () {
 chrome.webRequest.onBeforeRequest.addListener(
   function (details) {
     if (details.type === 'main_frame' && masterRegex.test(details.url)) {
-      // it's a shortened link
       const masterRegexMatch = details.url.match(masterRegex)
-      console.log(masterRegexMatch)
       const domain = masterRegexMatch[2]
-      console.log(domain)
-      console.log(shortenerRegex[domain])
       const shortenerRegexMatch = details.url.match(shortenerRegex[domain])
-      console.log(shortenerRegexMatch)
       var url = baseURL + domain + '/' + shortenerRegexMatch[1]
-      console.log(url)
       return { redirectUrl: url }
     }
-  }, { urls: ['<all_urls>'] }
+  }, { urls: ['<all_urls>'] }, ['blocking']
 )
 
 // Listens for messages to call fetch from background
