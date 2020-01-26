@@ -5,8 +5,9 @@ var tagsMatch = []
 const tinyLinks = []
 
 const masterRegex = /^http(s?):\/\/(bit\.ly|tinyurl\.com|goo\.gl)/
-const shortenersURL = 'http://localhost:4000/api/shorteners'
-const resolverURL = 'http://localhost:4000/api/unshorten'
+const alphanumericRegex = /[^a-zA-Z\d\s:]/
+const shortenersURL = 'http://301r.dev/api/shorteners'
+const resolverURL = 'http://301r.dev/api/unshorten/'
 
 const getShorteners = () => {
   const requestJson = {
@@ -22,7 +23,15 @@ const getShorteners = () => {
     const shortenerRegex = {}
     for (const key in resp.data) {
       const obj = (resp.data[key])
-      shortenerRegex[obj.domain] = new RegExp(obj.url_pattern.replace('{shortcode}', '([' + obj.shortcode_alphabet + ']+)'))
+      var shortcodeAlphabetEdited = ''
+      for (var i = 0; i < obj.shortcode_alphabet.length; i++) {
+        if (alphanumericRegex.test(obj.shortcode_alphabet.charAt(i))) {
+          shortcodeAlphabetEdited += '\\' + obj.shortcode_alphabet.charAt(i)
+        } else {
+          shortcodeAlphabetEdited += obj.shortcode_alphabet.charAt(i)
+        }
+      }
+      shortenerRegex[obj.domain] = new RegExp(obj.url_pattern.replace('{shortcode}', '([' + shortcodeAlphabetEdited + ']+)'))
     }
     return shortenerRegex
   })
