@@ -2,6 +2,7 @@
 /* eslint no-unused-vars: ["error", { "varsIgnorePattern": "_" }]  */
 
 const masterRegex = /^http(s?):\/\/(bit\.ly|tinyurl\.com|goo\.gl)/
+const alphanumericRegex = /[^a-zA-Z\d\s:]/
 const shortenersURL = 'http://301r.dev/api/shorteners'
 const baseURL = 'http://301r.dev/api/redirect/'
 var shortenerRegex = {}
@@ -20,7 +21,15 @@ const getShorteners = () => {
     const shortenerRegex = {}
     for (const key in resp.data) {
       const obj = (resp.data[key])
-      shortenerRegex[obj.domain] = new RegExp(obj.url_pattern.replace('{shortcode}', '([' + obj.shortcode_alphabet + ']+)'))
+      var shortcodeAlphabetEdited = ''
+      for (var i = 0; i < obj.shortcode_alphabet.length; i++) {
+        if (alphanumericRegex.test(obj.shortcode_alphabet.charAt(i))) {
+          shortcodeAlphabetEdited += '\\' + obj.shortcode_alphabet.charAt(i)
+        } else {
+          shortcodeAlphabetEdited += obj.shortcode_alphabet.charAt(i)
+        }
+      }
+      shortenerRegex[obj.domain] = new RegExp(obj.url_pattern.replace('{shortcode}', '([' + shortcodeAlphabetEdited + ']+)'))
     }
     return shortenerRegex
   })
@@ -48,7 +57,8 @@ chrome.webRequest.onBeforeRequest.addListener(
     if (details.type === 'main_frame' && masterRegex.test(details.url)) {
       const [_, _httpsMatch, domain] = details.url.match(masterRegex)
       const [_protocolDomain, shortcode] = details.url.match(shortenerRegex[domain])
-      return { redirectUrl: baseURL + domain + '/' + shortcode }
+      var url = baseURL + domain + '/' + shortcode
+      return { redirectUrl: url }
     }
   }, { urls: ['<all_urls>'] }, ['blocking']
 )
