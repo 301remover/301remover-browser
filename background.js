@@ -41,17 +41,6 @@ chrome.runtime.onStartup.addListener(function () {
   })
 })
 
-chrome.runtime.onInstalled.addListener(function () {
-  chrome.declarativeContent.onPageChanged.removeRules(undefined, function () {
-    chrome.declarativeContent.onPageChanged.addRules([{
-      conditions: [new chrome.declarativeContent.PageStateMatcher({
-        css: ['a']
-      })],
-      actions: [new chrome.declarativeContent.ShowPageAction()]
-    }])
-  })
-})
-
 chrome.webRequest.onBeforeRequest.addListener(
   function (details) {
     if (details.type === 'main_frame' && masterRegex.test(details.url)) {
